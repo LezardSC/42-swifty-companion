@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -177,11 +178,26 @@ private fun SkillRow(skill: Skill) {
 
 @Composable
 private fun ProjectRow(p: ProjectUser) {
+    val passed = p.validated == true
+    val statusColor = when {
+        p.status != "finished" -> MaterialTheme.colorScheme.onSurfaceVariant
+        passed -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.error
+    }
     Row(
         Modifier.fillMaxWidth().padding(vertical = 6.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(p.project.name, style = MaterialTheme.typography.bodyMedium)
+        Text(
+            text = when {
+                p.status != "finished" -> "in progress"
+                passed -> "${p.finalMark ?: 0}"
+                else -> "failed (${p.finalMark ?: 0})"
+            },
+            color = statusColor,
+            fontWeight = FontWeight.Medium
+        )
     }
 }
