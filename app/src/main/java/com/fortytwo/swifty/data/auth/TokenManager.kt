@@ -1,12 +1,12 @@
 package com.fortytwo.swifty.data.auth
 
+import com.fortytwo.swifty.data.network.AuthApiService
 import android.os.SystemClock
 import com.fortytwo.swifty.BuildConfig
-import com.fortytwo.swifty.data.network.AuthApiService
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class TokenManager {
+object TokenManager {
     private val mutex = Mutex()
     private var cachedToken: String? = null
     private var expiresAt: Long = 0
