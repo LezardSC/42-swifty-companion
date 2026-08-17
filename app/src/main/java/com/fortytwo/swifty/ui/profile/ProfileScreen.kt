@@ -36,7 +36,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.fortytwo.swifty.data.model.IntraUser
+import com.fortytwo.swifty.data.model.Skill
 import com.fortytwo.swifty.ui.common.UiState
+
+private const val DISPLAY_MAX = 20.0
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,6 +91,7 @@ private fun ProfileContent(user: IntraUser) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item { ProfileHeader(user) }
+        item { SkillsSection(user) }
     }
 }
 
@@ -117,9 +121,33 @@ private fun ProfileHeader(user: IntraUser) {
 }
 
 @Composable
+private fun SkillsSection(user: IntraUser) {
+    val skills = user.cursusUsers.lastOrNull()?.skills.orEmpty().sortedByDescending { it.level }
+    Column(Modifier.fillMaxWidth()) {
+        Text("Skills", style = MaterialTheme.typography.titleMedium)
+        Spacer(Modifier.height(8.dp))
+        if (skills.isEmpty()) {
+            Text("No skills recorded yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        skills.forEach { skill -> SkillRow(skill) }
+    }
+}
+
+@Composable
 private fun ProfileInfoRow(label: String, value: String) {
     Row(Modifier.fillMaxWidth().padding(vertical = 2.dp), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(value, fontWeight = FontWeight.Medium)
+    }
+}
+
+@Composable
+private fun SkillRow(skill: Skill) {
+    val fraction = (skill.level / DISPLAY_MAX).coerceIn(0.0, 1.0).toFloat()
+    Column {
+        Row {
+            Text(skill.name, style = MaterialTheme.typography.bodyMedium)
+            Text("${(fraction * 100).toInt()}% - lvl ${"%.2f".format(skill.level)}")
+        }
     }
 }
