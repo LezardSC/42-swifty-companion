@@ -38,6 +38,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.fortytwo.swifty.data.model.IntraUser
+import com.fortytwo.swifty.data.model.Project
+import com.fortytwo.swifty.data.model.ProjectUser
 import com.fortytwo.swifty.data.model.Skill
 import com.fortytwo.swifty.ui.common.UiState
 
@@ -94,6 +96,7 @@ private fun ProfileContent(user: IntraUser) {
     ) {
         item { ProfileHeader(user) }
         item { SkillsSection(user) }
+        item { ProjectsSection(user) }
     }
 }
 
@@ -136,6 +139,19 @@ private fun SkillsSection(user: IntraUser) {
 }
 
 @Composable
+private fun ProjectsSection(user: IntraUser) {
+    val projects = user.projectsUsers.sortedByDescending { it.finalMark ?: -1 }
+    Column(Modifier.fillMaxWidth()) {
+        Text("Projects", style = MaterialTheme.typography.titleMedium)
+        Spacer(Modifier.height(8.dp))
+        if (projects.isEmpty()) {
+            Text("No projects attempted yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        projects.forEach { p -> ProjectRow(p) }
+    }
+}
+
+@Composable
 private fun ProfileInfoRow(label: String, value: String) {
     Row(Modifier.fillMaxWidth().padding(vertical = 2.dp), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -156,5 +172,16 @@ private fun SkillRow(skill: Skill) {
             progress = { fraction },
             modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp))
         )
+    }
+}
+
+@Composable
+private fun ProjectRow(p: ProjectUser) {
+    Row(
+        Modifier.fillMaxWidth().padding(vertical = 6.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(p.project.name, style = MaterialTheme.typography.bodyMedium)
     }
 }
