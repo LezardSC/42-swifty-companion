@@ -3,6 +3,7 @@ package com.fortytwo.swifty.ui.profile
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -81,7 +82,11 @@ private fun ErrorMessage(state: UiState.Error, modifier: Modifier = Modifier) {
 
 @Composable
 private fun ProfileContent(user: IntraUser) {
-    LazyColumn {
+    LazyColumn (
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
         item { ProfileHeader(user) }
     }
 }
