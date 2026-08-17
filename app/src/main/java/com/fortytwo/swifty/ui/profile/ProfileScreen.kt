@@ -32,14 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.fortytwo.swifty.data.model.IntraUser
-import com.fortytwo.swifty.data.model.Project
 import com.fortytwo.swifty.data.model.ProjectUser
 import com.fortytwo.swifty.data.model.Skill
 import com.fortytwo.swifty.ui.common.UiState
