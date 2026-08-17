@@ -29,4 +29,17 @@ object NetworkModule {
             .build()
             .create(AuthApiService::class.java)
     }
+
+    val intraApi: IntraApiService by lazy {
+        val client = OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor(authApi))
+            .addInterceptor(loggingInterceptor)
+            .build()
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(client)
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+            .create(IntraApiService::class.java)
+    }
 }
