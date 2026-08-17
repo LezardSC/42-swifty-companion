@@ -34,7 +34,7 @@ fun SearchScreen(
     LaunchedEffect(state) {
         if (state is UiState.Success) {
             onUserFound((state as UiState.Success<IntraUser>).data.login)
-            viewModel.resetError()
+            viewModel.resetState()
         }
     }
 

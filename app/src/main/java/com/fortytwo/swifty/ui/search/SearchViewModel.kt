@@ -24,7 +24,7 @@ class SearchViewModel(
         }
     }
 
-    fun resetError() {
-        if (_state.value is UiState.Error) _state.value = UiState.Idle
+    fun resetState() {
+        if (_state.value !is UiState.Loading) _state.value = UiState.Idle
     }
 }
