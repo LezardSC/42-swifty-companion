@@ -1,9 +1,12 @@
 package com.fortytwo.swifty.ui.profile
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -83,5 +87,20 @@ private fun ProfileHeader(user: IntraUser) {
         Spacer(Modifier.height(12.dp))
         Text(user.fullName, style = MaterialTheme.typography.titleLarge)
         Text("@${user.login}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.height(12.dp))
+        ProfileInfoRow("Email", user.email)
+        ProfileInfoRow("Phone", user.phone ?: "hidden")
+        ProfileInfoRow("Location", user.location ?: "not on campus")
+        ProfileInfoRow("Wallet", "${user.wallet}₳")
+        ProfileInfoRow("Evaluation points", "${user.correctionPoint}")
+        ProfileInfoRow("Level", user.cursusUsers.lastOrNull()?.let { "%.2f".format(it.level) } ?: "-")
+    }
+}
+
+@Composable
+private fun ProfileInfoRow(label: String, value: String) {
+    Row(Modifier.fillMaxWidth().padding(vertical = 2.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+        Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(value, fontWeight = FontWeight.Medium)
     }
 }
