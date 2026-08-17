@@ -10,10 +10,20 @@ class AuthInterceptor (
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val token = runBlocking { TokenManager.getToken(authApi) }
-        val authenticated = chain.request().newBuilder()
+        val request = chain.request().newBuilder()
             .addHeader("Authorization", "Bearer $token")
             .build()
+        val response = chain.proceed(request)
 
-        return chain.proceed(authenticated)
+        if (response.code == 401) {
+            response.close()
+            val freshToken = runBlocking { TokenManager.getToken(authApi, forceRefresh = true) }
+            val retried = chain.request().newBuilder()
+                .addHeader("Authorization", "Bearer $freshToken")
+                .build()
+
+            return chain.proceed(retried)
+        }
+        return response
     }
 }

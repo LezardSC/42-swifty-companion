@@ -6,20 +6,30 @@ import com.fortytwo.swifty.BuildConfig
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-object TokenManager {
-    private val mutex = Mutex()
-    private var cachedToken: String? = null
-    private var expiresAt: Long = 0
 
-    suspend fun getToken(authApi: AuthApiService): String = mutex.withLock {
-        cachedToken?.takeIf { SystemClock.elapsedRealtime() < expiresAt } ?: run {
-            val response = authApi.getToken(
+object TokenManager {
+    private const val SAFETY_MARGIN_SECONDS = 60L
+
+    private val mutex = Mutex()
+
+    private data class CachedToken(val value: String, val expiresAtEpochSeconds: Long)
+    private var cached: CachedToken? = null
+
+    suspend fun getToken(authApi: AuthApiService, forceRefresh: Boolean = false): String = mutex.withLock {
+        val now = System.currentTimeMillis() / 1000
+        val current = cached
+        if (!forceRefresh && current != null && now < current.expiresAtEpochSeconds - SAFETY_MARGIN_SECONDS) {
+            return@withLock current.value
+        }
+        val response = authApi.getToken(
                 grantType = "client_credentials",
                 clientId = BuildConfig.API_UID,
                 clientSecret = BuildConfig.API_SECRET
-            )
-            expiresAt = SystemClock.elapsedRealtime() + (response.expiresIn - 60) * 1000L
-            response.accessToken.also { cachedToken = it }
-        }
+        )
+        val fresh = CachedToken(response.accessToken, now + response.expiresIn)
+        // for testing purposes
+        // val fresh = CachedToken(response.accessToken, now + 5)
+        cached = fresh
+        fresh.value
     }
 }
