@@ -144,10 +144,10 @@ private fun ProfileInfoRow(label: String, value: String) {
 @Composable
 private fun SkillRow(skill: Skill) {
     val fraction = (skill.level / DISPLAY_MAX).coerceIn(0.0, 1.0).toFloat()
-    Column {
-        Row {
+    Column(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(skill.name, style = MaterialTheme.typography.bodyMedium)
-            Text("${(fraction * 100).toInt()}% - lvl ${"%.2f".format(skill.level)}")
+            Text("lvl ${"%.2f".format(skill.level)} - ${(fraction * 100).toInt()}%")
         }
     }
 }
