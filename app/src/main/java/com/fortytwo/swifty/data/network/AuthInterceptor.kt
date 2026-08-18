@@ -4,12 +4,15 @@ import com.fortytwo.swifty.data.auth.TokenManager
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
+import okio.IOException
+
+class AuthConfigException(message: String, cause: Throwable) : IOException(message, cause)
 
 class AuthInterceptor (
     private val authApi: AuthApiService
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val token = runBlocking { TokenManager.getToken(authApi) }
+        val token = fetchToken(forceRefresh = false)
         val request = chain.request().newBuilder()
             .addHeader("Authorization", "Bearer $token")
             .build()
@@ -17,7 +20,7 @@ class AuthInterceptor (
 
         if (response.code == 401) {
             response.close()
-            val freshToken = runBlocking { TokenManager.getToken(authApi, forceRefresh = true) }
+            val freshToken = fetchToken(forceRefresh = true)
             val retried = chain.request().newBuilder()
                 .addHeader("Authorization", "Bearer $freshToken")
                 .build()
@@ -25,5 +28,13 @@ class AuthInterceptor (
             return chain.proceed(retried)
         }
         return response
+    }
+
+    private fun fetchToken(forceRefresh: Boolean): String {
+        try {
+            return runBlocking { TokenManager.getToken(authApi, forceRefresh) }
+        } catch (e: Exception) {
+            throw AuthConfigException("Could not authenticate with the 42 API. Check your API credentials.", e)
+        }
     }
 }

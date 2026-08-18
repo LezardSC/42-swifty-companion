@@ -2,6 +2,7 @@ package com.fortytwo.swifty.data.repository
 
 import retrofit2.HttpException
 import com.fortytwo.swifty.data.model.IntraUser
+import com.fortytwo.swifty.data.network.AuthConfigException
 import com.fortytwo.swifty.data.network.IntraApiService
 import com.fortytwo.swifty.ui.common.ErrorKind
 import com.fortytwo.swifty.ui.common.UiState
@@ -21,6 +22,8 @@ class IntraRepository(private val api: IntraApiService) {
                 401 -> UiState.Error("Authentication with the 42 API failed.", ErrorKind.UNKNOWN)
                 else -> UiState.Error("42 API error (${e.code()}).", ErrorKind.UNKNOWN)
             }
+        } catch (e: AuthConfigException) {
+            UiState.Error(e.message ?: "Could not authenticate with the 42 API.", ErrorKind.UNKNOWN)
         } catch (e: IOException) {
             UiState.Error("Can't reach the 42 API. Check your connection.", ErrorKind.NETWORK)
         }
