@@ -32,6 +32,7 @@ object NetworkModule {
 
     val intraApi: IntraApiService by lazy {
         val client = OkHttpClient.Builder()
+            .addInterceptor(RateLimitInterceptor())
             .addInterceptor(AuthInterceptor(authApi))
             .addInterceptor(loggingInterceptor)
             .build()

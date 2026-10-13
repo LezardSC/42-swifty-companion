@@ -1,6 +1,7 @@
 package com.fortytwo.swifty.data.repository
 
 import retrofit2.HttpException
+import com.fortytwo.swifty.data.model.Coalition
 import com.fortytwo.swifty.data.model.IntraUser
 import com.fortytwo.swifty.data.network.AuthConfigException
 import com.fortytwo.swifty.data.network.IntraApiService
@@ -26,6 +27,17 @@ class IntraRepository(private val api: IntraApiService) {
             UiState.Error(e.message ?: "Could not authenticate with the 42 API.", ErrorKind.UNKNOWN)
         } catch (e: IOException) {
             UiState.Error("Can't reach the 42 API. Check your connection.", ErrorKind.NETWORK)
+        }
+    }
+
+    // Cosmetic only: a missing coalition must never break the profile.
+    suspend fun findCoalition(login: String): Coalition? {
+        return try {
+            api.getCoalitions(login.trim().lowercase()).lastOrNull()
+        } catch (e: HttpException) {
+            null
+        } catch (e: IOException) {
+            null
         }
     }
 }

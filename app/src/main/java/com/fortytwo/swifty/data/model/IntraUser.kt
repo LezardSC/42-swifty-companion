@@ -16,7 +16,14 @@ data class IntraUser(
     @SerialName("correction_point") val correctionPoint: Int = 0,
     @SerialName("cursus_users") val cursusUsers: List<CursusUser> = emptyList(),
     @SerialName("projects_users") val projectsUsers: List<ProjectUser> = emptyList(),
-)
+) {
+    val mainCursus: CursusUser?
+        get() = cursusUsers.firstOrNull { it.cursus?.slug == MAIN_CURSUS_SLUG } ?: cursusUsers.lastOrNull()
+
+    private companion object {
+        const val MAIN_CURSUS_SLUG = "42cursus"
+    }
+}
 
 @Serializable
 data class ProfileImage(val link: String? = null)
@@ -29,7 +36,7 @@ data class CursusUser(
 )
 
 @Serializable
-data class Cursus(val name: String)
+data class Cursus(val name: String, val slug: String? = null)
 
 @Serializable
 data class Skill(val name: String, val level: Double)
@@ -44,3 +51,11 @@ data class ProjectUser(
 
 @Serializable
 data class Project(val name: String)
+
+@Serializable
+data class Coalition(
+    val id: Int,
+    val name: String,
+    val color: String? = null,
+    @SerialName("cover_url") val coverUrl: String? = null,
+)
