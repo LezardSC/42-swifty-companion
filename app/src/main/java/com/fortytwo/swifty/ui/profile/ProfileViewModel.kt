@@ -23,9 +23,11 @@ class ProfileViewModel(
 
     fun load(login: String) {
         viewModelScope.launch {
-            _state.value = repository.findUser(login)
+            val result = repository.findUser(login)
+            // Fetched before revealing the profile so it doesn't flash the default color.
             // Sequential on purpose, to stay under the API rate limit
-            _coalition.value = repository.findCoalition(login)
+            if (result is UiState.Success) _coalition.value = repository.findCoalition(login)
+            _state.value = result
         }
     }
 }
